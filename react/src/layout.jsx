@@ -1,4 +1,4 @@
-import { Layout, Menu, theme, Input, Space, Button } from 'antd'
+import { Layout, Menu, Input, Space, Button } from 'antd'
 import { Outlet, Link, useLocation } from 'react-router-dom'
 import {
   CustomerServiceOutlined,
@@ -12,9 +12,6 @@ const { Header, Sider, Content, Footer } = Layout
 export default function AppLayout() {
   const location = useLocation()
   const selected = [location.pathname]
-  const {
-    token: { colorBgContainer },
-  } = theme.useToken()
 
   const items = [
     {
@@ -53,8 +50,29 @@ export default function AppLayout() {
 
   return (
     <Layout style={{ minHeight: '100vh' }}>
-      <Sider width={240} theme="dark" style={{ position: 'sticky', top: 0, height: '100vh', background: 'linear-gradient(180deg, #0d0f14 0%, #141823 100%)' }}>
-        <div style={{ height: 64, color: '#e6f0ff', display: 'flex', alignItems: 'center', paddingLeft: 18, fontWeight: 700, letterSpacing: 0.3 }}>
+      <Sider
+        width={240}
+        theme="dark"
+        style={{
+          position: 'sticky',
+          top: 0,
+          height: '100vh',
+          background: 'linear-gradient(180deg, #1f1c2c 0%, #1e3c72 100%)',
+          boxShadow: '2px 0 8px rgba(0,0,0,0.15)',
+        }}
+      >
+        <div
+          style={{
+            height: 64,
+            color: '#e8edff',
+            display: 'flex',
+            alignItems: 'center',
+            paddingLeft: 18,
+            fontWeight: 700,
+            letterSpacing: 0.3,
+            fontSize: 18,
+          }}
+        >
            Aural Studio
         </div>
         <Menu
@@ -62,12 +80,23 @@ export default function AppLayout() {
           items={items}
           selectedKeys={selected}
           defaultOpenKeys={["/tools", "/visualize"]}
-          style={{ background: 'transparent', color: '#d7e3ff' }}
+          style={{ background: 'transparent', color: '#d1d9ff', fontWeight: 500 }}
           theme="dark"
         />
       </Sider>
       <Layout>
-        <Header style={{ padding: '0 20px', display: 'flex', alignItems: 'center', gap: 12, background: 'rgba(255,255,255,0.55)', backdropFilter: 'saturate(180%) blur(16px)', borderBottom: '1px solid rgba(0,0,0,0.06)' }}>
+        <Header
+          style={{
+            padding: '0 20px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 12,
+            background: 'rgba(255,255,255,0.75)',
+            backdropFilter: 'blur(12px)',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
+            borderBottom: '1px solid rgba(0,0,0,0.06)',
+          }}
+        >
           <Space.Compact style={{ width: 360 }}>
             <Input.Search placeholder="搜索功能或文件" allowClear />
           </Space.Compact>
