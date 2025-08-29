@@ -30,6 +30,8 @@ export default function AppLayout() {
         { key: '/tools/silence', label: <Link to="/tools/silence">静音清理</Link> },
         { key: '/tools/merge', label: <Link to="/tools/merge">合并</Link> },
         { key: '/tools/pitch', label: <Link to="/tools/pitch">变调</Link> },
+        { key: '/tools/volume', label: <Link to="/tools/volume">音量</Link> },
+        { key: '/tools/insert', label: <Link to="/tools/insert">插入</Link> },
       ],
     },
     {

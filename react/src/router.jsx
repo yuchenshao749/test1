@@ -7,6 +7,8 @@ import NormalizePage from './pages/tools/normalize'
 import SilencePage from './pages/tools/silence'
 import MergePage from './pages/tools/merge'
 import PitchPage from './pages/tools/pitch'
+import VolumePage from './pages/tools/volume'
+import InsertPage from './pages/tools/insert'
 import WaveformPage from './pages/visualize/waveform'
 import SpectrogramPage from './pages/visualize/spectrogram'
 import FilesPage from './pages/files'
@@ -27,6 +29,8 @@ export const router = createBrowserRouter([
           { path: 'silence', element: <SilencePage /> },
           { path: 'merge', element: <MergePage /> },
           { path: 'pitch', element: <PitchPage /> },
+          { path: 'volume', element: <VolumePage /> },
+          { path: 'insert', element: <InsertPage /> },
         ],
       },
       {
