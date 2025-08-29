@@ -369,6 +369,72 @@ def api_merge():
         return jsonify({'error': str(e)}), 404
 
 
+@app.post('/api/volume')
+def api_volume():
+    data = request.get_json(force=True, silent=True) or {}
+    file_id = data.get('fileId')
+    start_ms = float(data.get('startMs', 0))
+    end_ms = data.get('endMs')
+    gain_db = float(data.get('gainDb', 0))
+    try:
+        src_path = id_to_file_path(file_id)
+        y, sr = load_audio(src_path, sr=DEFAULT_SR, mono=True)
+        n = len(y)
+        start = max(0, int(start_ms / 1000.0 * sr))
+        end = n if end_ms is None else min(n, int(float(end_ms) / 1000.0 * sr))
+        if end <= start:
+            return jsonify({'error': '结束时间必须大于开始时间'}), 400
+        factor = 10 ** (gain_db / 20.0)
+        y_out = np.copy(y)
+        y_out[start:end] *= factor
+        peak = np.max(np.abs(y_out))
+        if peak > 1:
+            y_out = y_out / peak
+        new_name = create_processed_name('volume', file_id)
+        out_path = os.path.join(PROCESSED_FOLDER, new_name)
+        save_audio_wav(y_out, sr, out_path)
+        return jsonify({'id': new_name.split('__', 1)[0], 'filename': new_name, 'url': f"/api/download/processed/{new_name}"})
+    except FileNotFoundError as e:
+        return jsonify({'error': str(e)}), 404
+
+
+@app.post('/api/insert')
+def api_insert():
+    data = request.get_json(force=True, silent=True) or {}
+    base_id = data.get('baseId')
+    insert_id = data.get('insertId')
+    position_ms = float(data.get('positionMs', 0))
+    mode = (data.get('mode') or 'mix').lower()
+    try:
+        base_path = id_to_file_path(base_id)
+        ins_path = id_to_file_path(insert_id)
+        base, sr = load_audio(base_path, sr=DEFAULT_SR, mono=True)
+        ins, _ = load_audio(ins_path, sr=sr, mono=True)
+        pos = max(0, int(position_ms / 1000.0 * sr))
+        if mode == 'replace':
+            pre = base[:pos]
+            post_start = pos + len(ins)
+            post = base[post_start:] if post_start < len(base) else np.array([])
+            y_out = np.concatenate([pre, ins, post])
+        else:  # mix
+            out_len = max(len(base), pos + len(ins))
+            y_out = np.zeros(out_len, dtype=np.float32)
+            y_out[:len(base)] += base
+            if pos + len(ins) > out_len:
+                pad = pos + len(ins) - out_len
+                y_out = np.pad(y_out, (0, pad))
+            y_out[pos:pos + len(ins)] += ins
+            peak = np.max(np.abs(y_out))
+            if peak > 1:
+                y_out = y_out / peak
+        new_name = create_processed_name('insert', base_id)
+        out_path = os.path.join(PROCESSED_FOLDER, new_name)
+        save_audio_wav(y_out, sr, out_path)
+        return jsonify({'id': new_name.split('__', 1)[0], 'filename': new_name, 'url': f"/api/download/processed/{new_name}"})
+    except FileNotFoundError as e:
+        return jsonify({'error': str(e)}), 404
+
+
 @app.post('/api/pitch')
 def api_pitch():
     data = request.get_json(force=True, silent=True) or {}

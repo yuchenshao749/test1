@@ -69,18 +69,26 @@ export default function Workbench() {
             </p>
             <p className="ant-upload-text">拖拽文件到此处或点击上传</p>
           </Upload.Dragger>
-          <Button icon={<PlusOutlined />} type="primary" shape="round" onClick={async () => {
-            try {
-              setLoading(true)
-              await api.post('/generate_tone', { seconds: 3, freq: 440 })
-              await refresh()
-              message.success('已生成示例音频')
-            } catch (e) {
-              message.error('生成失败')
-            } finally {
-              setLoading(false)
-            }
-          }}>生成示例音频</Button>
+          <Button
+            icon={<PlusOutlined />}
+            type="primary"
+            shape="round"
+            onClick={async () => {
+              try {
+                setLoading(true)
+                await api.post('/generate_tone', { seconds: 3, freq: 440 })
+                await refresh()
+                message.success('已生成示例音频')
+              } catch (e) {
+                console.error(e)
+                message.error('生成失败')
+              } finally {
+                setLoading(false)
+              }
+            }}
+          >
+            生成示例音频
+          </Button>
         </Space>
       </Card>
 

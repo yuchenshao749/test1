@@ -59,4 +59,14 @@ export async function mergeAudio(payload) {
   return data
 }
 
+export async function adjustVolume(payload) {
+  const { data } = await api.post('/volume', payload)
+  return data
+}
+
+export async function insertAudioSegment(payload) {
+  const { data } = await api.post('/insert', payload)
+  return data
+}
+
 
