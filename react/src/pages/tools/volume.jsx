@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Card, Button, Select, InputNumber, Slider, message } from 'antd'
-import { listFiles, adjustVolume } from '../../api'
+import { listFiles, adjustVolume, getMetadata } from '../../api'
+import WaveformSelector from '../../components/waveform-selector'
 
 export default function VolumePage() {
   const [files, setFiles] = useState([])
@@ -35,8 +36,30 @@ export default function VolumePage() {
   return (
     <Card title={<span className="title-strong">片段音量调整</span>} bordered className="glass-card">
       <div style={{ display: 'grid', gap: 16 }}>
-        <Select style={{ width: 360 }} placeholder="请选择文件" value={fileId} onChange={setFileId}
-                options={files.map(f => ({ value: f.id, label: f.name }))} />
+        <Select
+          style={{ width: 360 }}
+          placeholder="请选择文件"
+          value={fileId}
+          onChange={async id => {
+            setFileId(id)
+            const meta = await getMetadata(id)
+            setStartMs(0)
+            setEndMs(Math.round(meta.duration * 1000))
+          }}
+          options={files.map(f => ({ value: f.id, label: f.name }))}
+        />
+        {fileId && (
+          <WaveformSelector
+            fileId={fileId}
+            mode="range"
+            startMs={startMs}
+            endMs={endMs}
+            onChange={(s, e) => {
+              setStartMs(Math.round(s))
+              setEndMs(Math.round(e))
+            }}
+          />
+        )}
         <div style={{ display: 'flex', gap: 12 }}>
           <InputNumber addonBefore="开始" min={0} step={50} value={startMs} onChange={setStartMs} style={{ width: 180 }} />
           <InputNumber addonBefore="结束" min={0} step={50} value={endMs} onChange={setEndMs} style={{ width: 180 }} />

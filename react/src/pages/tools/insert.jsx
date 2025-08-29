@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Card, Button, Select, InputNumber, Radio, message } from 'antd'
-import { listFiles, insertAudioSegment } from '../../api'
+import { listFiles, insertAudioSegment, getMetadata } from '../../api'
+import WaveformSelector from '../../components/waveform-selector'
 
 export default function InsertPage() {
   const [files, setFiles] = useState([])
@@ -37,8 +38,26 @@ export default function InsertPage() {
   return (
     <Card title={<span className="title-strong">插入音频片段</span>} bordered className="glass-card">
       <div style={{ display: 'grid', gap: 16 }}>
-        <Select style={{ width: 360 }} placeholder="原始文件" value={baseId} onChange={setBaseId} options={options} />
+        <Select
+          style={{ width: 360 }}
+          placeholder="原始文件"
+          value={baseId}
+          onChange={async id => {
+            setBaseId(id)
+            await getMetadata(id)
+            setPositionMs(0)
+          }}
+          options={options}
+        />
         <Select style={{ width: 360 }} placeholder="插入文件" value={insertId} onChange={setInsertId} options={options} />
+        {baseId && (
+          <WaveformSelector
+            fileId={baseId}
+            mode="point"
+            positionMs={positionMs}
+            onChange={p => setPositionMs(Math.round(p))}
+          />
+        )}
         <InputNumber
           addonBefore="位置 (毫秒)"
           min={0}
